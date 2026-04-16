@@ -6,13 +6,17 @@ public class PlayerInteract : MonoBehaviour
     public Transform jugador;
     public float rangoInteraccion = 3f;
 
-    // --- NUEVO CAMBIO: Variable para definir qué capas escuchar ---
     [Header("Filtros de Física")]
     public LayerMask capaInteractuable;
 
-    private bool mirandoInteractuable = false;
-    private Button botonActual;
+    [Header("Configuración de Interfaz (UI)")]
+    [Tooltip("Tamaño del recuadro blanco en pantalla")]
+    public float tamanoCajaUI = 100f;
+    [Tooltip("Tamaño de la letra 'E'")]
+    public int tamanoFuenteUI = 80;
 
+    // Ya no guardamos el boton actual aquí, lo resolvemos en el momento
+    private bool mirandoInteractuable = false;
     private GUIStyle estiloPersonalizado;
 
     void Start()
@@ -27,11 +31,10 @@ public class PlayerInteract : MonoBehaviour
         estiloPersonalizado.normal.background = fondoBlanco;
         estiloPersonalizado.normal.textColor = Color.black;
         estiloPersonalizado.alignment = TextAnchor.MiddleCenter;
-        estiloPersonalizado.fontSize = 20;
+        estiloPersonalizado.fontSize = tamanoFuenteUI;
         estiloPersonalizado.fontStyle = FontStyle.Bold;
 
-        // --- OPTIONAL: Auto-asignar la layer por código si está vacía ---
-        // Esto busca la layer llamada "Interactuable" por seguridad.
+        // Auto-asignar la layer por código si está vacía
         if (capaInteractuable == 0)
         {
             capaInteractuable = LayerMask.GetMask("Interactuable");
@@ -41,30 +44,36 @@ public class PlayerInteract : MonoBehaviour
     void Update()
     {
         mirandoInteractuable = false;
-        botonActual = null;
 
         if (jugador == null) return;
 
         Ray rayo = new Ray(transform.position, transform.forward);
         RaycastHit impacto;
 
-        // --- NUEVO CAMBIO: Raycast Optimizado ---
-        // Hemos añadido 'capaInteractuable' al final. 
-        // El rayo ignora todo lo que no esté en esa capa.
+        // El rayo ignora todo lo que no esté en la capa Interactuable
         if (Physics.Raycast(rayo, out impacto, rangoInteraccion, capaInteractuable))
         {
-            // Como ya sabemos que chocó con algo "Interactuable", 
-            // buscamos el script Button.
-            botonActual = impacto.collider.GetComponent<Button>();
+            // --- NUEVO CAMBIO: Buscamos ambos scripts ---
+            InteractuableTV tele = impacto.collider.GetComponent<InteractuableTV>();
+            Button boton = impacto.collider.GetComponent<Button>();
 
-            if (botonActual != null)
+            // Si el objeto tiene un script de TV O un script de Botón...
+            if (tele != null || boton != null)
             {
-                // ¡Lo estamos mirando, está en rango Y es de la layer correcta!
+                // Mostramos la letra E en pantalla
                 mirandoInteractuable = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    botonActual.EjecutarAccion(jugador);
+                    // Comprobamos qué es lo que estamos mirando exactamente para actuar
+                    if (tele != null)
+                    {
+                        tele.Encender();
+                    }
+                    else if (boton != null)
+                    {
+                        boton.EjecutarAccion(jugador);
+                    }
                 }
             }
         }
@@ -74,7 +83,7 @@ public class PlayerInteract : MonoBehaviour
     {
         if (mirandoInteractuable)
         {
-            float tamano = 35f;
+            float tamano = tamanoCajaUI;
             float posX = (Screen.width - tamano) / 2;
             float posY = (Screen.height - tamano) / 2;
 
