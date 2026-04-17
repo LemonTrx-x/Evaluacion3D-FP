@@ -13,9 +13,7 @@ public class MinijuegoTV : MonoBehaviour
     public TextMeshProUGUI textoBoton2;
 
     [Header("Mecánica de Salvación")]
-    [Tooltip("El botón o imagen que aparece al último segundo")]
     public GameObject botonSecreto;
-    [Tooltip("A donde irá el jugador si sobrevive")]
     public Vector3 coordenadasSalvacion;
 
     [Header("Control del Jugador")]
@@ -33,7 +31,7 @@ public class MinijuegoTV : MonoBehaviour
     void Start()
     {
         if (canvasMinijuego != null) canvasMinijuego.SetActive(false);
-        if (botonSecreto != null) botonSecreto.SetActive(false); // Empezar oculto
+        if (botonSecreto != null) botonSecreto.SetActive(false);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -47,10 +45,14 @@ public class MinijuegoTV : MonoBehaviour
         textoTiempo.text = "Tiempo: " + Mathf.Ceil(tiempoRestante).ToString();
 
         // --- LÓGICA DE SALVACIÓN ---
-        // Si queda entre 0 y 1 segundo, mostramos el botón secreto
         if (tiempoRestante <= 1f && tiempoRestante > 0)
         {
-            if (!botonSecreto.activeSelf) botonSecreto.SetActive(true);
+            // Si el botón está apagado, lo encendemos y le damos una posición aleatoria
+            if (!botonSecreto.activeSelf)
+            {
+                MoverBotonAleatoriamente(); // ¡NUEVA FUNCIÓN!
+                botonSecreto.SetActive(true);
+            }
         }
         else
         {
@@ -61,6 +63,24 @@ public class MinijuegoTV : MonoBehaviour
         {
             Morir();
         }
+    }
+
+    // --- NUEVO CAMBIO: Calcula una posición al azar en la pantalla ---
+    void MoverBotonAleatoriamente()
+    {
+        // Obtenemos el componente que controla la posición de la UI
+        RectTransform rectBoton = botonSecreto.GetComponent<RectTransform>();
+
+        // Calculamos los márgenes para que el botón no aparezca medio cortado fuera de la pantalla
+        float margenX = rectBoton.rect.width / 2f;
+        float margenY = rectBoton.rect.height / 2f;
+
+        // Generamos coordenadas X e Y al azar dentro de los límites de la pantalla
+        float posicionAleatoriaX = Random.Range(margenX, Screen.width - margenX);
+        float posicionAleatoriaY = Random.Range(margenY, Screen.height - margenY);
+
+        // Movemos el botón a esa nueva posición
+        rectBoton.position = new Vector3(posicionAleatoriaX, posicionAleatoriaY, 0);
     }
 
     public void IniciarMinijuego()
@@ -81,15 +101,12 @@ public class MinijuegoTV : MonoBehaviour
         GenerarNuevaPregunta();
     }
 
-    // --- FUNCIÓN PARA EL BOTÓN SECRETO ---
     public void ClickEnBotonSecreto()
     {
-        Debug.Log("¡Increíble! Te has salvado.");
         juegoActivo = false;
         canvasMinijuego.SetActive(false);
         botonSecreto.SetActive(false);
 
-        // Teletransportar al jugador usando su Transform (referenciado en scriptInteraccion)
         Transform pTransform = scriptInteraccion.jugador;
         CharacterController cc = pTransform.GetComponent<CharacterController>();
 
@@ -104,14 +121,12 @@ public class MinijuegoTV : MonoBehaviour
             pTransform.position = coordenadasSalvacion;
         }
 
-        // Reactivamos todo
         scriptInteraccion.enabled = true;
         foreach (MonoBehaviour script in scriptsDeMovimientoYCamara)
         {
             if (script != null) script.enabled = true;
         }
 
-        // Volvemos a bloquear el ratón
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
