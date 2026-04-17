@@ -5,40 +5,40 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Ajustes de Movimiento")]
     public float velocidad = 5f;
-    public float fuerzaSalto = 7f;
 
     private Rigidbody rb;
-    private bool enElSuelo = true;
+
+    [Header("Animación")]
+    private Animator animador;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        animador = GetComponent<Animator>();
     }
 
     void Update()
     {
-        
+        // 1. Lectura de las teclas (WASD o Flechas)
         float movimientoX = Input.GetAxis("Horizontal");
         float movimientoZ = Input.GetAxis("Vertical");
 
-        
+        // 2. Movimiento físico
         Vector3 direccion = transform.right * movimientoX + transform.forward * movimientoZ;
         transform.position += direccion * velocidad * Time.deltaTime;
 
-        
-        if (Input.GetKeyDown(KeyCode.Space) && enElSuelo)
+        // 3. Control de Animación
+        if (direccion.magnitude > 0.1f)
         {
-            rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
-            enElSuelo = false;
+            // Pasa a la animación "Run"
+            if (animador != null) animador.SetBool("seMueve", true);
         }
-    }
-
-    void OnCollisionEnter(Collision colision)
-    {
-        if (colision.gameObject.CompareTag("Suelo"))
+        else
         {
-            enElSuelo = true;
+            // Vuelve a "Happy Idle"
+            if (animador != null) animador.SetBool("seMueve", false);
         }
     }
 }

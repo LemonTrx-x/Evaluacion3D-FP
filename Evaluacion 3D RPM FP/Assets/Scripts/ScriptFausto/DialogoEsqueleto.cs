@@ -9,13 +9,17 @@ public class DialogoEsqueleto : MonoBehaviour
     public TextMeshProUGUI textoDialogoTMP;
     public GameObject panelBurbuja;
 
+    [Header("Animación del Esqueleto")]
+    [Tooltip("Arrastra aquí el objeto del esqueleto que tiene el Animator")]
+    public Animator animadorEsqueleto; // <--- NUEVO
+
     [Header("Contenido de la Misión")]
     [TextArea(3, 10)]
     public string[] frasesDeMision;
 
     [Header("Configuración del Regaño")]
     public string fraseRecordatorio = "¿Qué estás mirando? ¡Ve a por mi cangrejo!";
-    public float tiempoSilencio = 5f; // Los 5 segundos que querías
+    public float tiempoSilencio = 5f;
 
     [Header("Configuración de Escena")]
     public string nombreEscenaDestino = "SceneTesting";
@@ -39,12 +43,14 @@ public class DialogoEsqueleto : MonoBehaviour
         if (panelBurbuja != null) panelBurbuja.SetActive(false);
         if (altavoz == null) altavoz = GetComponent<AudioSource>();
 
+        // Si no asignaste el animador, intentamos buscarlo
+        if (animadorEsqueleto == null) animadorEsqueleto = GetComponent<Animator>();
+
         IniciarDialogo();
     }
 
     void Update()
     {
-        // Solo detectamos input si NO estamos en los 5 segundos de silencio
         if (!esperandoParaRegaño)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
@@ -61,6 +67,10 @@ public class DialogoEsqueleto : MonoBehaviour
         recordatorioActivo = false;
         esperandoParaRegaño = false;
         panelBurbuja.SetActive(true);
+
+        // Resetear el enojo al empezar por si acaso
+        if (animadorEsqueleto != null) animadorEsqueleto.SetBool("estaEnojado", false);
+
         EmpezarNuevaFrase();
     }
 
@@ -68,21 +78,18 @@ public class DialogoEsqueleto : MonoBehaviour
     {
         if (estaEscribiendo)
         {
-            // Autocompletar texto si estamos escribiendo
             StopCoroutine(corrutinaEscritura);
             textoDialogoTMP.text = fraseCompletaActual;
             estaEscribiendo = false;
         }
         else
         {
-            // Si ya estamos en el recordatorio y el jugador pulsa, TELETRANSPORTAR
             if (recordatorioActivo)
             {
                 SceneManager.LoadScene(nombreEscenaDestino);
                 return;
             }
 
-            // Pasar a la siguiente frase
             indiceActual++;
             if (indiceActual < frasesDeMision.Length)
             {
@@ -90,8 +97,6 @@ public class DialogoEsqueleto : MonoBehaviour
             }
             else
             {
-                // ¡AQUÍ ESTÁ EL CAMBIO! 
-                // Terminaron las frases normales: cerramos y esperamos
                 StartCoroutine(SecuenciaSilencioYRegaño());
             }
         }
@@ -99,6 +104,22 @@ public class DialogoEsqueleto : MonoBehaviour
 
     void EmpezarNuevaFrase()
     {
+        // --- PUNTO 1: COMPROBACIÓN DEL TEXTO 5 ---
+        if (animadorEsqueleto != null)
+        {
+            if (indiceActual == 5)
+            {
+                // Si es la frase 5, ¡se enoja!
+                animadorEsqueleto.SetBool("estaEnojado", true);
+            }
+            else
+            {
+                // --- NUEVO: APAGAR EL ENOJO ---
+                // Si es cualquier OTRA frase, le decimos que se relaje
+                animadorEsqueleto.SetBool("estaEnojado", false);
+            }
+        }
+
         fraseCompletaActual = frasesDeMision[indiceActual];
         corrutinaEscritura = StartCoroutine(EscribirLetras());
     }
@@ -121,15 +142,19 @@ public class DialogoEsqueleto : MonoBehaviour
         estaEscribiendo = false;
     }
 
-    // --- NUEVA LÓGICA DE ESPERA ---
     IEnumerator SecuenciaSilencioYRegaño()
     {
-        esperandoParaRegaño = true; // Bloqueamos el input del jugador
-        panelBurbuja.SetActive(false); // Desaparece el panel
+        esperandoParaRegaño = true;
+        panelBurbuja.SetActive(false);
 
-        yield return new WaitForSeconds(tiempoSilencio); // Esperamos los 5 segundos
+        yield return new WaitForSeconds(tiempoSilencio);
 
-        // Reaparece el panel con la frase final
+        // --- PUNTO 2: ACTIVACIÓN POR ESPERA ---
+        if (animadorEsqueleto != null)
+        {
+            animadorEsqueleto.SetBool("estaEnojado", true);
+        }
+
         esperandoParaRegaño = false;
         recordatorioActivo = true;
         panelBurbuja.SetActive(true);
