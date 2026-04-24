@@ -7,9 +7,13 @@ public class PlayerController : MonoBehaviour
     public float velocidad = 5f;
     public float sensibilidadRaton = 100f;
     public float gravedad = -9.81f; // Fuerza de gravedad estándar
+    public float jumpHeight = 2f;
+
 
     private CharacterController controller;
     private Vector3 velocidadCaida; // Guarda la velocidad a la que cae
+    private bool isGrounded;
+
 
     [Header("Animación")]
     private Animator animador;
@@ -56,5 +60,31 @@ public class PlayerController : MonoBehaviour
         {
             if (animador != null) animador.SetBool("seMueve", false);
         }
+
+
+
+
+
+
+        //SALTO
+        // Comprobar si está en el suelo
+        isGrounded = controller.isGrounded;
+
+        if (isGrounded && velocidadCaida.y < 0)
+        {
+            velocidadCaida.y = -2f; // Mantener pegado al suelo
+        }
+
+        
+
+        // Salto
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocidadCaida.y = Mathf.Sqrt(jumpHeight * -2f * gravedad);
+        }
+
+        // Aplicar gravedad
+        velocidadCaida.y += gravedad * Time.deltaTime;
+        controller.Move(velocidadCaida * Time.deltaTime);
     }
 }
