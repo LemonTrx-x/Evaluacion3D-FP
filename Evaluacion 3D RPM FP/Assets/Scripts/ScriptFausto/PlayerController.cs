@@ -1,43 +1,59 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Ajustes de Movimiento")]
     public float velocidad = 5f;
+    public float sensibilidadRaton = 100f;
+    public float gravedad = -9.81f; // Fuerza de gravedad est谩ndar
 
-    private Rigidbody rb;
+    private CharacterController controller;
+    private Vector3 velocidadCaida; // Guarda la velocidad a la que cae
 
-    [Header("Animaci髇")]
+    [Header("Animaci贸n")]
     private Animator animador;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
-
+        controller = GetComponent<CharacterController>();
         animador = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // 1. Lectura de las teclas (WASD o Flechas)
-        float movimientoX = Input.GetAxis("Horizontal");
-        float movimientoZ = Input.GetAxis("Vertical");
+        // 1. Rotaci贸n del cuerpo (Izquierda/Derecha)
+        float ratonX = Input.GetAxis("Mouse X") * sensibilidadRaton * Time.deltaTime;
+        transform.Rotate(Vector3.up * ratonX);
 
-        // 2. Movimiento f韘ico
-        Vector3 direccion = transform.right * movimientoX + transform.forward * movimientoZ;
-        transform.position += direccion * velocidad * Time.deltaTime;
+        // 2. Movimiento Horizontal (WASD)
+        float inputX = Input.GetAxisRaw("Horizontal");
+        float inputZ = Input.GetAxisRaw("Vertical");
 
-        // 3. Control de Animaci髇
-        if (direccion.magnitude > 0.1f)
+        // Calculamos la direcci贸n y le decimos al CharacterController que se mueva
+        Vector3 direccionMover = transform.right * inputX + transform.forward * inputZ;
+        
+        // La funci贸n .Move() es m谩gica: choca contra paredes sin temblar
+        controller.Move(direccionMover.normalized * velocidad * Time.deltaTime);
+
+        // 3. Aplicar Gravedad
+        // Si tocamos el suelo, reseteamos la velocidad de ca铆da para que no se acumule
+        if (controller.isGrounded && velocidadCaida.y < 0)
         {
-            // Pasa a la animaci髇 "Run"
+            velocidadCaida.y = -2f; // Un valor peque帽o para mantenerlo pegado al piso
+        }
+
+        // Aplicamos la gravedad matem谩tica y movemos el controlador hacia abajo
+        velocidadCaida.y += gravedad * Time.deltaTime;
+        controller.Move(velocidadCaida * Time.deltaTime);
+
+        // 4. Control de Animaci贸n
+        if (Mathf.Abs(inputX) > 0.1f || Mathf.Abs(inputZ) > 0.1f)
+        {
             if (animador != null) animador.SetBool("seMueve", true);
         }
         else
         {
-            // Vuelve a "Happy Idle"
             if (animador != null) animador.SetBool("seMueve", false);
         }
     }

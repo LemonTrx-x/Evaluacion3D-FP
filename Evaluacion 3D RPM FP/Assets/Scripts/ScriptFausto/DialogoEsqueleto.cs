@@ -9,22 +9,25 @@ public class DialogoEsqueleto : MonoBehaviour
     public TextMeshProUGUI textoDialogoTMP;
     public GameObject panelBurbuja;
 
-    [Header("AnimaciÛn del Esqueleto")]
-    [Tooltip("Arrastra aquÌ el objeto del esqueleto que tiene el Animator")]
-    public Animator animadorEsqueleto; // <--- NUEVO
+    [Header("Transici√≥n de Nivel")]
+    public TransicionManager managerTransicion; 
+    public string textoTransicion = "Nivel 2: El cangrejo"; 
 
-    [Header("Contenido de la MisiÛn")]
+    [Header("Animaci√≥n del Esqueleto")]
+    public Animator animadorEsqueleto;
+
+    [Header("Contenido de la Misi√≥n")]
     [TextArea(3, 10)]
     public string[] frasesDeMision;
 
-    [Header("ConfiguraciÛn del RegaÒo")]
-    public string fraseRecordatorio = "øQuÈ est·s mirando? °Ve a por mi cangrejo!";
+    [Header("Configuraci√≥n del Rega√±o")]
+    public string fraseRecordatorio = "¬øQu√© est√°s mirando? ¬°Ve a por mi cangrejo!";
     public float tiempoSilencio = 5f;
 
-    [Header("ConfiguraciÛn de Escena")]
+    [Header("Configuraci√≥n de Escena")]
     public string nombreEscenaDestino = "SceneTesting";
 
-    [Header("ConfiguraciÛn de Velocidad")]
+    [Header("Configuraci√≥n de Velocidad")]
     public float velocidadEscritura = 0.05f;
 
     [Header("Audio")]
@@ -33,7 +36,7 @@ public class DialogoEsqueleto : MonoBehaviour
 
     private int indiceActual = 0;
     private bool estaEscribiendo = false;
-    private bool esperandoParaRegaÒo = false;
+    private bool esperandoParaRega√±o = false;
     private bool recordatorioActivo = false;
     private Coroutine corrutinaEscritura;
     private string fraseCompletaActual;
@@ -42,8 +45,6 @@ public class DialogoEsqueleto : MonoBehaviour
     {
         if (panelBurbuja != null) panelBurbuja.SetActive(false);
         if (altavoz == null) altavoz = GetComponent<AudioSource>();
-
-        // Si no asignaste el animador, intentamos buscarlo
         if (animadorEsqueleto == null) animadorEsqueleto = GetComponent<Animator>();
 
         IniciarDialogo();
@@ -51,7 +52,7 @@ public class DialogoEsqueleto : MonoBehaviour
 
     void Update()
     {
-        if (!esperandoParaRegaÒo)
+        if (!esperandoParaRega√±o)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
             {
@@ -65,10 +66,9 @@ public class DialogoEsqueleto : MonoBehaviour
         if (frasesDeMision.Length == 0) return;
         indiceActual = 0;
         recordatorioActivo = false;
-        esperandoParaRegaÒo = false;
+        esperandoParaRega√±o = false;
         panelBurbuja.SetActive(true);
 
-        // Resetear el enojo al empezar por si acaso
         if (animadorEsqueleto != null) animadorEsqueleto.SetBool("estaEnojado", false);
 
         EmpezarNuevaFrase();
@@ -86,7 +86,25 @@ public class DialogoEsqueleto : MonoBehaviour
         {
             if (recordatorioActivo)
             {
-                SceneManager.LoadScene(nombreEscenaDestino);
+                // --- CAMBIOS PARA DESACTIVAR EL DI√ÅLOGO ---
+                
+                // 1. Ocultamos la burbuja de texto para que no se vea detr√°s del panel negro
+                if (panelBurbuja != null) panelBurbuja.SetActive(false);
+
+                // 2. Llamamos a la transici√≥n
+                if (managerTransicion != null)
+                {
+                    managerTransicion.IniciarTransicionEscena(nombreEscenaDestino, textoTransicion);
+                }
+                else
+                {
+                    SceneManager.LoadScene(nombreEscenaDestino);
+                }
+
+                // 3. DESACTIVAMOS ESTE SCRIPT
+                // Al hacer esto, el Update() dejar√° de ejecutarse y el jugador ya no podr√° interactuar m√°s con el esqueleto.
+                this.enabled = false; 
+
                 return;
             }
 
@@ -97,25 +115,21 @@ public class DialogoEsqueleto : MonoBehaviour
             }
             else
             {
-                StartCoroutine(SecuenciaSilencioYRegaÒo());
+                StartCoroutine(SecuenciaSilencioYRega√±o());
             }
         }
     }
 
     void EmpezarNuevaFrase()
     {
-        // --- PUNTO 1: COMPROBACI”N DEL TEXTO 5 ---
         if (animadorEsqueleto != null)
         {
             if (indiceActual == 5)
             {
-                // Si es la frase 5, °se enoja!
                 animadorEsqueleto.SetBool("estaEnojado", true);
             }
             else
             {
-                // --- NUEVO: APAGAR EL ENOJO ---
-                // Si es cualquier OTRA frase, le decimos que se relaje
                 animadorEsqueleto.SetBool("estaEnojado", false);
             }
         }
@@ -142,20 +156,19 @@ public class DialogoEsqueleto : MonoBehaviour
         estaEscribiendo = false;
     }
 
-    IEnumerator SecuenciaSilencioYRegaÒo()
+    IEnumerator SecuenciaSilencioYRega√±o()
     {
-        esperandoParaRegaÒo = true;
+        esperandoParaRega√±o = true;
         panelBurbuja.SetActive(false);
 
         yield return new WaitForSeconds(tiempoSilencio);
 
-        // --- PUNTO 2: ACTIVACI”N POR ESPERA ---
         if (animadorEsqueleto != null)
         {
             animadorEsqueleto.SetBool("estaEnojado", true);
         }
 
-        esperandoParaRegaÒo = false;
+        esperandoParaRega√±o = false;
         recordatorioActivo = true;
         panelBurbuja.SetActive(true);
         fraseCompletaActual = fraseRecordatorio;
