@@ -719,7 +719,7 @@ MonoBehaviour:
   - "La muerte es muy mala para el cart\xEDlago, cr\xE9eme"
   fraseRecordatorio: "\xBFQu\xE9 est\xE1s mirando? \xA1Ve a por mi cangrejo!"
   tiempoSilencio: 5
-  nombreEscenaDestino: SceneTesting
+  nombreEscenaDestino: SceneGame
   velocidadEscritura: 0.05
   altavoz: {fileID: 824344698}
   sonidoLetra: {fileID: 8300000, guid: 35ee901bbf249694883de890c3a30589, type: 3}
