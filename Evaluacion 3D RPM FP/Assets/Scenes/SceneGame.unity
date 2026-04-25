@@ -9488,6 +9488,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3042016231070954709, guid: a55c555f579cc3647bf8aaf8116217a9, type: 3}
   m_PrefabInstance: {fileID: 497548526}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &498453813 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1182687728350775670, guid: 093933386566ce94d8c8090d0c6b10bc, type: 3}
+  m_PrefabInstance: {fileID: 5482468997058335118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddb0deb48edd6294eb35ff7975d7867e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteract
 --- !u!1001 &498792646
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21898,6 +21909,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: old_monitor_2 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1176271974739730283, guid: bf15518dc245933498060e3aa7112ed6, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1176271974739730283, guid: bf15518dc245933498060e3aa7112ed6, type: 3}
+      propertyPath: m_TagString
+      value: Interactuable
+      objectReference: {fileID: 0}
     - target: {fileID: 3425858113306996462, guid: bf15518dc245933498060e3aa7112ed6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -21985,19 +22004,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1110016521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7676ba15789684f46acbc7c452b28b17, type: 3}
+  m_Script: {fileID: 11500000, guid: 8467622a9c06d5d4f8e316ac4d4c0293, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinijuegoTV
-  canvasMinijuego: {fileID: 0}
-  textoTiempo: {fileID: 0}
-  textoOperacion: {fileID: 0}
-  textoBoton1: {fileID: 0}
-  textoBoton2: {fileID: 0}
-  botonSecreto: {fileID: 0}
-  coordenadasSalvacion: {x: 0, y: 0, z: 0}
-  scriptInteraccion: {fileID: 0}
-  scriptsDeMovimientoYCamara: []
-  tiempoMaximo: 10
+  m_EditorClassIdentifier: Assembly-CSharp::InteractuableTV
+  scriptMinijuego: {fileID: 2003352964}
 --- !u!1001 &1111136353
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31934,7 +31944,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1642574901
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33322,7 +33332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1727511507
 Transform:
   m_ObjectHideFlags: 0
@@ -38161,7 +38171,7 @@ MonoBehaviour:
   textoBoton2: {fileID: 1089458594}
   botonSecreto: {fileID: 1424708499}
   coordenadasSalvacion: {x: 0, y: 0, z: 0}
-  scriptInteraccion: {fileID: 0}
+  scriptInteraccion: {fileID: 498453813}
   scriptsDeMovimientoYCamara: []
   tiempoMaximo: 10
 --- !u!4 &2003352965
