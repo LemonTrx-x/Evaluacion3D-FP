@@ -1,10 +1,42 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events; 
 using TMPro;
 
 public class MinijuegoTV : MonoBehaviour
 {
+    // =======================================================
+    // üìç COORDENADAS Y TELETRANSPORTE üìç
+    // =======================================================
+    [Header("===== DESTINO DEL CANGREJO (BOT√ìN SECRETO) =====")]
+    public Vector3 coordenadasCangrejo;
+
+    [Header("===== DESTINO DE CASTIGO (SI PIERDES) =====")]
+    public Vector3 coordenadasMuerte;
+
+    // =======================================================
+    // üé¨ TRANSICIONES (¬°NUEVO!) üé¨
+    // =======================================================
+    [Header("--- TRANSICI√ìN ---")]
+    [Tooltip("Arrastra aqu√≠ el objeto que tiene tu script TransicionManager")]
+    public TransicionManager gestorTransiciones;
+    
+    [Tooltip("El texto que saldr√° en la pantalla negra al ganar")]
+    public string textoVictoria = "Nivel 2: La Oficina...";
+    
+    [Tooltip("El texto que saldr√° en la pantalla negra al perder")]
+    public string textoDerrota = "Has fallado. Castigo inminente...";
+
+    // =======================================================
+    // üîó EVENTOS EXTERNOS üîó
+    // =======================================================
+    [Header("--- EVENTOS EXTERNOS ---")]
+    public UnityEvent eventoAlAtraparCangrejo; 
+
+    // =======================================================
+    // üñ•Ô∏è REFERENCIAS DE LA INTERFAZ Y JUEGO üñ•Ô∏è
+    // =======================================================
     [Header("Referencias de la Interfaz")]
     public GameObject canvasMinijuego;
     public TextMeshProUGUI textoTiempo;
@@ -12,15 +44,14 @@ public class MinijuegoTV : MonoBehaviour
     public TextMeshProUGUI textoBoton1;
     public TextMeshProUGUI textoBoton2;
 
-    [Header("Mec·nica de SalvaciÛn")]
+    [Header("El Bot√≥n Secreto (UI)")]
     public GameObject botonSecreto;
-    public Vector3 coordenadasSalvacion;
 
     [Header("Control del Jugador")]
     public PlayerInteract scriptInteraccion;
     public MonoBehaviour[] scriptsDeMovimientoYCamara;
 
-    [Header("ConfiguraciÛn")]
+    [Header("Configuraci√≥n")]
     public float tiempoMaximo = 10f;
     private float tiempoRestante;
     private int rondaActual = 1;
@@ -44,13 +75,11 @@ public class MinijuegoTV : MonoBehaviour
         tiempoRestante -= Time.deltaTime;
         textoTiempo.text = "Tiempo: " + Mathf.Ceil(tiempoRestante).ToString();
 
-        // --- L”GICA DE SALVACI”N ---
         if (tiempoRestante <= 1f && tiempoRestante > 0)
         {
-            // Si el botÛn est· apagado, lo encendemos y le damos una posiciÛn aleatoria
             if (!botonSecreto.activeSelf)
             {
-                MoverBotonAleatoriamente(); // °NUEVA FUNCI”N!
+                MoverBotonAleatoriamente();
                 botonSecreto.SetActive(true);
             }
         }
@@ -65,21 +94,13 @@ public class MinijuegoTV : MonoBehaviour
         }
     }
 
-    // --- NUEVO CAMBIO: Calcula una posiciÛn al azar en la pantalla ---
     void MoverBotonAleatoriamente()
     {
-        // Obtenemos el componente que controla la posiciÛn de la UI
         RectTransform rectBoton = botonSecreto.GetComponent<RectTransform>();
-
-        // Calculamos los m·rgenes para que el botÛn no aparezca medio cortado fuera de la pantalla
         float margenX = rectBoton.rect.width / 2f;
         float margenY = rectBoton.rect.height / 2f;
-
-        // Generamos coordenadas X e Y al azar dentro de los lÌmites de la pantalla
         float posicionAleatoriaX = Random.Range(margenX, Screen.width - margenX);
         float posicionAleatoriaY = Random.Range(margenY, Screen.height - margenY);
-
-        // Movemos el botÛn a esa nueva posiciÛn
         rectBoton.position = new Vector3(posicionAleatoriaX, posicionAleatoriaY, 0);
     }
 
@@ -103,32 +124,10 @@ public class MinijuegoTV : MonoBehaviour
 
     public void ClickEnBotonSecreto()
     {
-        juegoActivo = false;
-        canvasMinijuego.SetActive(false);
-        botonSecreto.SetActive(false);
-
-        Transform pTransform = scriptInteraccion.jugador;
-        CharacterController cc = pTransform.GetComponent<CharacterController>();
-
-        if (cc != null)
-        {
-            cc.enabled = false;
-            pTransform.position = coordenadasSalvacion;
-            cc.enabled = true;
-        }
-        else
-        {
-            pTransform.position = coordenadasSalvacion;
-        }
-
-        scriptInteraccion.enabled = true;
-        foreach (MonoBehaviour script in scriptsDeMovimientoYCamara)
-        {
-            if (script != null) script.enabled = true;
-        }
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (eventoAlAtraparCangrejo != null) eventoAlAtraparCangrejo.Invoke();
+        
+        // ¬°Usamos el texto de victoria!
+        TerminarMinijuegoYTeletransportar(coordenadasCangrejo, textoVictoria); 
     }
 
     public void GenerarNuevaPregunta()
@@ -142,16 +141,8 @@ public class MinijuegoTV : MonoBehaviour
             textoOperacion.text = num1 + " + " + num2;
             int respuestaFalsa = respuestaCorrecta + Random.Range(1, 4);
             idBotonCorrecto = Random.Range(1, 3);
-            if (idBotonCorrecto == 1)
-            {
-                textoBoton1.text = respuestaCorrecta.ToString();
-                textoBoton2.text = respuestaFalsa.ToString();
-            }
-            else
-            {
-                textoBoton1.text = respuestaFalsa.ToString();
-                textoBoton2.text = respuestaCorrecta.ToString();
-            }
+            if (idBotonCorrecto == 1) { textoBoton1.text = respuestaCorrecta.ToString(); textoBoton2.text = respuestaFalsa.ToString(); }
+            else { textoBoton1.text = respuestaFalsa.ToString(); textoBoton2.text = respuestaCorrecta.ToString(); }
         }
         else if (rondaActual == 4)
         {
@@ -162,20 +153,44 @@ public class MinijuegoTV : MonoBehaviour
         }
     }
 
-    public void PresionarBoton1()
-    {
-        if (idBotonCorrecto == 1) { rondaActual++; GenerarNuevaPregunta(); }
-        else Morir();
-    }
-
-    public void PresionarBoton2()
-    {
-        if (idBotonCorrecto == 2) { rondaActual++; GenerarNuevaPregunta(); }
-        else Morir();
-    }
+    public void PresionarBoton1() { if (idBotonCorrecto == 1) { rondaActual++; GenerarNuevaPregunta(); } else Morir(); }
+    public void PresionarBoton2() { if (idBotonCorrecto == 2) { rondaActual++; GenerarNuevaPregunta(); } else Morir(); }
 
     void Morir()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // ¬°Usamos el texto de derrota!
+        TerminarMinijuegoYTeletransportar(coordenadasMuerte, textoDerrota);
+    }
+
+    // --- FUNCI√ìN MAESTRA CON EL NUEVO TRANSICION MANAGER ---
+    void TerminarMinijuegoYTeletransportar(Vector3 destino, string mensajePantalla)
+    {
+        juegoActivo = false;
+        canvasMinijuego.SetActive(false);
+        botonSecreto.SetActive(false);
+
+        // Si conectaste el Manager, √©l se encarga de todo el teletransporte y efecto
+        if (gestorTransiciones != null)
+        {
+            gestorTransiciones.IniciarTransicion(scriptInteraccion.jugador, destino, mensajePantalla);
+        }
+        else
+        {
+            // Fallback: Si se te olvida poner el Manager, hace el teletransporte brusco antiguo
+            Transform pTransform = scriptInteraccion.jugador;
+            CharacterController cc = pTransform.GetComponent<CharacterController>();
+            if (cc != null) { cc.enabled = false; pTransform.position = destino; cc.enabled = true; }
+            else { pTransform.position = destino; }
+        }
+
+        // Devolvemos el control al jugador
+        scriptInteraccion.enabled = true;
+        foreach (MonoBehaviour script in scriptsDeMovimientoYCamara)
+        {
+            if (script != null) script.enabled = true;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }
