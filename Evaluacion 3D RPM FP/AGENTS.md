@@ -2,7 +2,7 @@
 - Project name: Evaluacion 3D RPM FP
 - Unity version: Unity 6000.2.10f1
 - Active game object:
-  - Name: PauseManager
+  - Name: Cangrejo lvl 1
   - Tag: Untagged
-  - Layer: Default
+  - Layer: Interactuable
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
