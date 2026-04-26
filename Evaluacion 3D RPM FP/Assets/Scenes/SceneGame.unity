@@ -56855,10 +56855,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7676ba15789684f46acbc7c452b28b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinijuegoTV
-  coordenadasCangrejo: {x: 0, y: 50, z: 0}
+  coordenadasCangrejo: {x: -9.381, y: 0, z: -27.498}
   coordenadasMuerte: {x: -8.7, y: 0.09, z: -7.537}
   gestorTransiciones: {fileID: 291950302}
-  textoVictoria: 'Nivel 3: Corre...'
+  textoVictoria: 'Nivel 3: Lava'
   textoDerrota: Fatal Error
   eventoAlAtraparCangrejo:
     m_PersistentCalls:
@@ -61760,7 +61760,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5702075127647302165, guid: 093933386566ce94d8c8090d0c6b10bc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.152
+      value: -8.383
       objectReference: {fileID: 0}
     - target: {fileID: 5702075127647302165, guid: 093933386566ce94d8c8090d0c6b10bc, type: 3}
       propertyPath: m_LocalPosition.y
@@ -61768,7 +61768,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5702075127647302165, guid: 093933386566ce94d8c8090d0c6b10bc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.1
+      value: 11.011
       objectReference: {fileID: 0}
     - target: {fileID: 5702075127647302165, guid: 093933386566ce94d8c8090d0c6b10bc, type: 3}
       propertyPath: m_LocalRotation.w
