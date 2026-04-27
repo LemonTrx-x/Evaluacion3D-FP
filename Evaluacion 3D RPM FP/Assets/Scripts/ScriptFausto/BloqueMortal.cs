@@ -1,39 +1,88 @@
 using UnityEngine;
+using TMPro; 
+using System.Collections; 
 
 public class BloqueMortal : MonoBehaviour
 {
-    [Header("Configuraci髇 de Teletransporte")]
-    [Tooltip("Coordenadas X, Y, Z a las que quieres enviar al jugador")]
+    [Header("Configuraci贸n de Teletransporte")]
     public Vector3 coordenadasDestino = new Vector3(0f, 1f, 0f);
 
-    [Header("Configuraci髇 de Detecci髇")]
+    [Header("Configuraci贸n de Detecci贸n")]
     public string tagJugador = "Player";
 
-    private void OnCollisionEnter(Collision choque)
+    [Header("Configuraci贸n de Interfaz")]
+    public GameObject panelUI;
+    public TextMeshProUGUI textoUI;
+    
+    [TextArea(3, 5)]
+    public string mensajeAMostrar = "隆Fatal Error!";
+    public float velocidadTexto = 0.05f;
+    public float tiempoDeEspera = 2.0f;
+
+    private void OnTriggerEnter(Collider otro)
     {
-        if (choque.gameObject.CompareTag(tagJugador))
+        if (otro.gameObject.CompareTag(tagJugador))
         {
-            Debug.Log("Teletransportando a: " + coordenadasDestino);
-            Teletransportar(choque.gameObject);
+            Teletransportar(otro.gameObject);
+            MostrarTextoProgresivo();
         }
     }
 
     private void Teletransportar(GameObject jugador)
     {
-        // 1. Intentamos obtener el CharacterController (si existe)
         CharacterController cc = jugador.GetComponent<CharacterController>();
 
         if (cc != null)
         {
-            // Si el jugador tiene CharacterController, hay que apagarlo para moverlo
             cc.enabled = false;
             jugador.transform.position = coordenadasDestino;
             cc.enabled = true;
         }
         else
         {
-            // Si no tiene CC (es un Rigidbody o un objeto simple)
             jugador.transform.position = coordenadasDestino;
+        }
+    }
+
+    private void MostrarTextoProgresivo()
+    {
+        if (panelUI != null) panelUI.SetActive(true);
+        
+        if (textoUI != null)
+        {
+            textoUI.gameObject.SetActive(true);
+            StopAllCoroutines(); 
+            StartCoroutine(EfectoMecanografiaYDesactivar());
+        }
+    }
+
+    private IEnumerator EfectoMecanografiaYDesactivar()
+    {
+        // 1. Asignamos TODO el texto de golpe
+        textoUI.text = mensajeAMostrar;
+        
+        // 2. Le decimos a TextMeshPro que esconda todas las letras (visibles = 0)
+        textoUI.maxVisibleCharacters = 0;
+
+        // 3. Vamos revelando las letras una a una
+        for (int i = 0; i <= mensajeAMostrar.Length; i++)
+        {
+            textoUI.maxVisibleCharacters = i;
+            yield return new WaitForSeconds(velocidadTexto);
+        }
+
+        // 4. Esperamos el tiempo indicado
+        yield return new WaitForSeconds(tiempoDeEspera);
+
+        // 5. Apagamos todo
+        if (textoUI != null)
+        {
+            textoUI.gameObject.SetActive(false); 
+        }
+
+        if (panelUI != null)
+        {
+            panelUI.SetActive(false); 
         }
     }
 }
