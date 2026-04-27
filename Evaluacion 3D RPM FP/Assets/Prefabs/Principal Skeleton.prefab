@@ -200,8 +200,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70913196, z: -0, w: 0.70507586}
   m_LocalPosition: {x: -8.205328, y: 0, z: 11.191539}
-  m_LocalScale: {x: 0.90069216, y: 0.90069216, z: 0.90069216}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.74, y: 0.74, z: 0.74}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1673827607802514749}
   - {fileID: 5851119197127431342}
@@ -244,6 +244,7 @@ MonoBehaviour:
   velocidad: 3
   sensibilidadRaton: 100
   gravedad: -9.81
+  jumpHeight: 2
 --- !u!143 &3595204797805513309
 CharacterController:
   m_ObjectHideFlags: 0

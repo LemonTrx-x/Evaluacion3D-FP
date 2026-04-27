@@ -6,7 +6,6 @@ public class TriggersCollider : MonoBehaviour
     public string ActivarCollider;
 
     private bool activado = false;
-    public ResetManager resetManager;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -16,10 +15,5 @@ public class TriggersCollider : MonoBehaviour
             animator.SetTrigger(ActivarCollider);
             activado = true;
         }
-    }
-
-    public void ResetTrigger()
-    {
-        activado = false;
     }
 }

@@ -2,7 +2,7 @@
 - Project name: Evaluacion 3D RPM FP
 - Unity version: Unity 6000.2.10f1
 - Active game object:
-  - Name: Cangrejo lvl 1
+  - Name: Escenario
   - Tag: Untagged
-  - Layer: Interactuable
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
