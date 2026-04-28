@@ -7,6 +7,9 @@ TagManager:
   - Suelo
   - Interactuable
   - Enemy
+  - ActiveGun
+  - NoActiveGun
+  - CrabShoot
   layers:
   - Default
   - TransparentFX

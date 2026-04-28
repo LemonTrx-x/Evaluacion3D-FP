@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using TMPro;
+
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -18,10 +21,23 @@ public class PlayerController : MonoBehaviour
     [Header("Animación")]
     private Animator animador;
 
+    [Header("Shoot")]
+    public Transform spawn;
+    public GameObject bullet;
+    public float shootForce = 1500f;
+    public float shootRate = 0.5f;
+    float shootRateTime = 0f;
+    public bool shootActive = false;
+    public GameObject gunHide;
+    public GameObject gunText;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
         animador = GetComponent<Animator>();
+        shootActive = false;
+        gunHide.SetActive(false);
+        gunText.SetActive(false);
     }
 
     void Update()
@@ -86,5 +102,40 @@ public class PlayerController : MonoBehaviour
         // Aplicar gravedad
         velocidadCaida.y += gravedad * Time.deltaTime;
         controller.Move(velocidadCaida * Time.deltaTime);
+
+        Shoot();
+    }
+
+    void Shoot()
+    {
+        if (shootActive == true && Input.GetMouseButtonDown(0) && Time.time > shootRateTime)
+        {
+            GameObject newBullet;
+            
+            newBullet = Instantiate(bullet, spawn.position, spawn.rotation);
+
+            newBullet.GetComponent<Rigidbody>().AddForce(spawn.forward * shootForce);
+
+            shootRateTime = Time.time;
+
+            Destroy(newBullet, 5);
+        }   
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("ActiveGun"))
+        {
+            shootActive = true;
+            gunHide.SetActive(true);
+            gunText.SetActive(true);
+        }
+
+        if (other.CompareTag("NoActiveGun"))
+        {
+            shootActive = false;
+            gunHide.SetActive(false);
+            gunText.SetActive(false);
+        }
     }
 }
