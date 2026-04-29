@@ -598,7 +598,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -697,27 +697,25 @@ MonoBehaviour:
   textoDialogoTMP: {fileID: 198846085}
   panelBurbuja: {fileID: 1140517248}
   managerTransicion: {fileID: 145723546}
-  textoTransicion: 'Nivel 1: El cangrejo'
+  textoTransicion: 'Level 1: The Crab'
   animadorEsqueleto: {fileID: 1550387978}
   frasesDeMision:
-  - "\xA1Eh, t\xFA! "
-  - "S\xED, t\xFA, el de la piel sobre los huesos. Ac\xE9rcate, no muerdo... "
-  - "literalmente no tengo est\xF3mago para eso."
-  - "Te pedir\xEDa que me echaras una mano, pero ya veo que tienes dos. Yo perd\xED
-    la izquierda en el '98."
-  - "Ver\xE1s, me dej\xE9 a mi cangrejo de peluche en esa oficina de ah\xED. Es mi
-    apoyo emocional."
-  - ' No me juzgues, estar muerto genera mucha ansiedad.'
-  - "Pero esc\xFAchame bien... no es tan f\xE1cil como parece. Ese peluche tiene...
-    temperamento. "
-  - "He visto a hombres m\xE1s fuertes que t\xFA perder la cabeza intentando agarrarlo.
-    Y es de algod\xF3n, imag\xEDnate"
-  - Usa WASD para desplazarte. No esperes mucha agilidad; mis pies se sienten como
-    dos ladrillos de calcio seco ahora mismo.
-  - "\xBFSaltar? \xBFCorrer? \xBFEn ese estado? Tus articulaciones crujen m\xE1s
-    que una bolsa de patatas fritas. "
-  - "La muerte es muy mala para el cart\xEDlago, cr\xE9eme"
-  fraseRecordatorio: "\xBFQu\xE9 est\xE1s mirando? \xA1Ve a por mi cangrejo!"
+  - Hey, you!
+  - Yeah, you, my bony buddy. Come closer, I don't bite...
+  - I literally don't have the stomach for it.
+  - I'd ask you to lend me a hand, but I see you already have two. I lost my left
+    one back in '98.
+  - You see, I left my stuffed crab in that office over there. It's my emotional
+    support.
+  - Don't judge me, being dead causes a lot of anxiety.
+  - But listen closely... it's not as easy as it looks. That plushie has... a temper.
+  - I've seen stronger skeletons than you lose their heads trying to grab it. And
+    it's made of cotton, imagine that.
+  - Use WASD to move around. Don't expect much agility, though; your feet look like
+    two bricks of dry calcium right now.
+  - Run? In that condition? Your joints crunch louder than a bag of potato chips.
+  - Death is terrible for the cartilage, trust me.
+  fraseRecordatorio: What are you staring at? Go get my crab!
   tiempoSilencio: 5
   nombreEscenaDestino: SceneGame
   velocidadEscritura: 0.05

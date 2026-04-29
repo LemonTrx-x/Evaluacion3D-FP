@@ -147,7 +147,7 @@ public class MinijuegoTV : MonoBehaviour
         else if (rondaActual == 4)
         {
             textoOperacion.text = Random.Range(1000, 9999) + " x " + Random.Range(100, 999);
-            textoBoton1.text = "No lo se";
+            textoBoton1.text = "IDK";
             textoBoton2.text = ":)";
             idBotonCorrecto = 0;
         }

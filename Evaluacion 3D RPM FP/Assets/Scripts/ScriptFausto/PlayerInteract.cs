@@ -2,26 +2,40 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviour
 {
-    [Header("Configuración de Interacción")]
+    [Header("ConfiguraciÃ³n de InteracciÃ³n")]
     public Transform jugador;
     public float rangoInteraccion = 3f;
 
-    [Header("Filtros de Física")]
+    [Header("Filtros de FÃ­sica")]
     public LayerMask capaInteractuable;
 
-    [Header("Configuración de Interfaz (UI)")]
-    [Tooltip("Tamaño del recuadro blanco en pantalla")]
+    [Header("ConfiguraciÃ³n de Interfaz (UI)")]
+    [Tooltip("TamaÃ±o del recuadro blanco en pantalla")]
     public float tamanoCajaUI = 100f;
-    [Tooltip("Tamaño de la letra 'E'")]
+    [Tooltip("TamaÃ±o de la letra 'E'")]
     public int tamanoFuenteUI = 80;
 
-    // Ya no guardamos el boton actual aquí, lo resolvemos en el momento
+    // --- AÃ‘ADIDO: Variables para el sonido ---
+    [Header("ConfiguraciÃ³n de Audio")]
+    [Tooltip("El sonido que se reproducirÃ¡ al apretar la E")]
+    public AudioClip sonidoInteraccion;
+    private AudioSource fuenteDeAudio;
+    // ----------------------------------------
+
     private bool mirandoInteractuable = false;
     private GUIStyle estiloPersonalizado;
 
     void Start()
     {
-        // 1. Inicializamos tu estilo exacto
+        // --- AÃ‘ADIDO: Inicializar el AudioSource ---
+        // Buscamos un AudioSource. Si el objeto no tiene uno, se lo aÃ±adimos automÃ¡ticamente.
+        fuenteDeAudio = GetComponent<AudioSource>();
+        if (fuenteDeAudio == null)
+        {
+            fuenteDeAudio = gameObject.AddComponent<AudioSource>();
+        }
+        // -------------------------------------------
+
         estiloPersonalizado = new GUIStyle();
 
         Texture2D fondoBlanco = new Texture2D(1, 1);
@@ -34,7 +48,6 @@ public class PlayerInteract : MonoBehaviour
         estiloPersonalizado.fontSize = tamanoFuenteUI;
         estiloPersonalizado.fontStyle = FontStyle.Bold;
 
-        // Auto-asignar la layer por código si está vacía
         if (capaInteractuable == 0)
         {
             capaInteractuable = LayerMask.GetMask("Interactuable");
@@ -43,6 +56,13 @@ public class PlayerInteract : MonoBehaviour
 
     void Update()
     {
+        // --- NUEVO: Si el juego estÃ¡ pausado (pantalla de victoria), no hacemos nada ---
+        if (Time.timeScale == 0f)
+        {
+            mirandoInteractuable = false;
+            return; 
+        }
+
         mirandoInteractuable = false;
 
         if (jugador == null) return;
@@ -50,22 +70,26 @@ public class PlayerInteract : MonoBehaviour
         Ray rayo = new Ray(transform.position, transform.forward);
         RaycastHit impacto;
 
-        // El rayo ignora todo lo que no esté en la capa Interactuable
         if (Physics.Raycast(rayo, out impacto, rangoInteraccion, capaInteractuable))
         {
-            // --- NUEVO CAMBIO: Buscamos ambos scripts ---
             InteractuableTV tele = impacto.collider.GetComponent<InteractuableTV>();
             Button boton = impacto.collider.GetComponent<Button>();
+            Final scriptFinal = impacto.collider.GetComponent<Final>();
 
-            // Si el objeto tiene un script de TV O un script de Botón...
-            if (tele != null || boton != null)
+            if (tele != null || boton != null || scriptFinal != null)
             {
-                // Mostramos la letra E en pantalla
                 mirandoInteractuable = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    // Comprobamos qué es lo que estamos mirando exactamente para actuar
+                    // --- AÃ‘ADIDO: Reproducimos el sonido de interacciÃ³n ---
+                    // Comprobamos que hayas asignado un sonido en el Inspector
+                    if (sonidoInteraccion != null)
+                    {
+                        fuenteDeAudio.PlayOneShot(sonidoInteraccion);
+                    }
+                    // ------------------------------------------------------
+
                     if (tele != null)
                     {
                         tele.Encender();
@@ -74,6 +98,10 @@ public class PlayerInteract : MonoBehaviour
                     {
                         boton.EjecutarAccion(jugador);
                     }
+                    else if (scriptFinal != null)
+                    {
+                        scriptFinal.TerminarJuego();
+                    }
                 }
             }
         }
@@ -81,6 +109,9 @@ public class PlayerInteract : MonoBehaviour
 
     void OnGUI()
     {
+        // --- NUEVO: Evitamos dibujar la "E" si el juego estÃ¡ pausado ---
+        if (Time.timeScale == 0f) return;
+
         if (mirandoInteractuable)
         {
             float tamano = tamanoCajaUI;
