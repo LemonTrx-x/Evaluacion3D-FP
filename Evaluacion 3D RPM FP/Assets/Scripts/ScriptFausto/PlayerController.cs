@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     public bool shootActive = false;
     public GameObject gunHide;
     public GameObject gunText;
+    public ScoreManager scoreManager;
+    public GameObject lastCrab;
+
 
     void Start()
     {
@@ -78,7 +81,7 @@ public class PlayerController : MonoBehaviour
         }
 
 
-
+        ScoreGoal();
 
 
 
@@ -136,6 +139,19 @@ public class PlayerController : MonoBehaviour
             shootActive = false;
             gunHide.SetActive(false);
             gunText.SetActive(false);
+        }
+    }
+
+    void ScoreGoal()
+    {
+        if (scoreManager.score == 10)
+        {
+            lastCrab.SetActive(true);
+        }
+
+        else
+        {
+            lastCrab.SetActive(false);
         }
     }
 }

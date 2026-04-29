@@ -2,7 +2,7 @@
 - Project name: Evaluacion 3D RPM FP
 - Unity version: Unity 6000.2.10f1
 - Active game object:
-  - Name: ScoreManager
-  - Tag: Untagged
+  - Name: CangrejoShoot
+  - Tag: CrabShoot
   - Layer: Interactuable
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
